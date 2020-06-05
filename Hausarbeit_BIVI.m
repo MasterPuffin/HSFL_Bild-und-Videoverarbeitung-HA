@@ -5,16 +5,21 @@ clear; %Variablen bereinigen
 close all; %alles schlieﬂen
 
 %% 1. PLATE GENERATOR
-script1_PlateGenerator;
-script2_TrafficImageGenerator;
-script3_TrafficResizeToSameSize;
+%script1_PlateGenerator;
+%script2_TrafficImageGenerator;
+%script3_TrafficResizeToSameSize;
 
 % Training Data
 % Load images from Plate Generator into data store for augmentation step 2
-%imageDS = imageDatastore('Folder?','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
-%[trainingImageDS,validationImageDS] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
+imageDataAugmenter = imageDatastore('TrainingData','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+[trainingImageDS,validationImageDS] = splitEachLabel(imageDataAugmenter,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
 
 %% 2. AUGMENTER
+outputSize = [360 480 3];
+imageAugmenter = imageDataAugmenter('RandRotation',[-50,50],'RandXTranslation',[-5 5], 'RandYTranslation',[-5 5]);
+trainingImageAugDS = augmentedImageDatastore(outputSize, trainingImageDS, 'DataAugmentation',imageAugmenter);
+validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'DataAugmentation',imageAugmenter);
+
 
 %% 3. OWN AUGMENTER OPTIONAL
 
@@ -23,7 +28,7 @@ script3_TrafficResizeToSameSize;
 % ----- einfaches DeepLearning Netzwerk definieren
 
 layers = [
-    imageInputLayer([28 28 1])
+    imageInputLayer([360 480 3])
     
     convolution2dLayer(3,8,'Padding','same')
     batchNormalizationLayer
@@ -41,11 +46,21 @@ layers = [
     batchNormalizationLayer
     reluLayer
     
-    fullyConnectedLayer(10)
+    fullyConnectedLayer(3)
     softmaxLayer
     classificationLayer];
 
+options = trainingOptions('sgdm',...
+    'MaxEpochs',3, ...                    
+    'ValidationData', validationImageDS,...  % validationImageDS oder validationImageAugDS  ...
+    'ValidationFrequency',30,...
+    'Verbose',false,...
+    'Plots','training-progress');
 
+net = trainNetwork(trainingImageDS,layers,options);  % trainingImageDS oder trainingImageAugDS
+
+predictedLabels = classify(net, validationImageDS);
+accuracy = mean(predictedLabels == validationImageDS.Labels)
 
 %% 5. TRAIN NETWORK
 
