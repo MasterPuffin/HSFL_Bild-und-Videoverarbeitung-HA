@@ -37,11 +37,10 @@ colorMat = (dec2base(0:39,4)-'0') .* 85;
 for i=1:nop
     % Beispiel Kennzeichen
     % Vor dem letzten Nummernblock muss ein "" eingefuegt werden.
-    %text = ["f" "l" zname(randi([42 47],1)) "land15" zname(randi([1 26],[1 2])) "" zname(randi([30 39],[1 3]))]; %FL
-    %text = ["s" "l" zname(randi([42 47],1)) "land15" zname(randi([1 26],[1 2])) "" zname(randi([30 39],[1 3]))]; %SL
-    % Random Kennzeichens
+    text = ["f" "l" zname(randi([42 47],1)) "land15" zname(randi([1 26],[1 2])) "" zname(randi([30 39],[1 3]))];
+    % Random Kennzeichen
     is = [randi([1 26],[1 2]) randi([42 47],1) randi([48 63],1) randi([1 26],[1 2]) 64 randi([30 39],[1 3])];
-    text = zname(is); %RANDOM = Other
+    %text = zname(is);
     savename = [text([1 2 5 6 8 9 10])];
     
     %% Hintergrundblech
