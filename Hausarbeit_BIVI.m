@@ -11,8 +11,8 @@ close all; %alles schlieﬂen
 
 % Training Data
 % Load images from Plate Generator into data store for augmentation step 2
-imageDataAugmenter = imageDatastore('TrainingData','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
-[trainingImageDS,validationImageDS] = splitEachLabel(imageDataAugmenter,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
+imageDS = imageDatastore('TrainingData','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+[trainingImageDS,validationImageDS] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
 
 %% 2. AUGMENTER
 outputSize = [360 480 3];
