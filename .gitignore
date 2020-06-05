@@ -21,6 +21,9 @@ octave-workspace
 # Simulink autosave extension
 .autosave
 
-.png
-.jpg
-.jpeg
+backgrounds/
+images/
+labels/
+plates/
+samesize_images/
+samesize_labels/
