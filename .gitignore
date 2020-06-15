@@ -29,3 +29,4 @@ samesize_images/
 samesize_labels/
 
 .idea/
+.DS_Store
