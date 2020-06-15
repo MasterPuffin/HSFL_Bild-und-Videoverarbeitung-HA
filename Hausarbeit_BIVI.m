@@ -6,12 +6,11 @@ close all; %alles schlieﬂen
 
 %% 1. PLATE GENERATOR
 % script1_PlateGenerator;
-% script2_TrafficImageGenerator;
-% script3_TrafficResizeToSameSize;
 
 % Training Data
 % Load images from Plate Generator into data store for augmentation step 2
-imageDS = imageDatastore('PlatesCuttedFromPicAndLabels','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+imageDS = imageDatastore('TrainingData3','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+%resizeImages;
 [trainingImageDS,validationImageDS] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
 
 %% 2. AUGMENTER
@@ -70,7 +69,6 @@ options = trainingOptions('sgdm',...
     'ValidationFrequency',5,...
     'Verbose',false,...
     'MiniBatchSize', 10, ...    
-    'ExecutionEnvironment', 'parallel', ...
     'Plots','training-progress');
 
 net = trainNetwork(trainingImageAugDS,layers,options);  % trainingImageDS oder trainingImageAugDS
@@ -79,13 +77,9 @@ net = trainNetwork(trainingImageAugDS,layers,options);  % trainingImageDS oder t
 %% 6. TEST NETWORK
 
 testDS = imageDatastore('PlatesCuttedFromPicAndLabels','IncludeSubfolders',true,'LabelSource','foldernames');
-
-outputSize = [200 50 3]; %only for resizing :D
-imageAugmenter2 = imageDataAugmenter();
-testDSsize = augmentedImageDatastore(outputSize, testDS, 'DataAugmentation',imageAugmenter2);
-
-predictedLabels = classify(net, testDSsize);
+predictedLabels = classify(net, testDS);
 accuracy = mean(predictedLabels == testDS.Labels)
+
 %% 7. SET UP ALEXNET OPTIONAL
 
 %% 8. DATA OUTPUT
