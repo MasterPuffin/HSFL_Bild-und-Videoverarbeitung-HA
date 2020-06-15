@@ -27,3 +27,5 @@ labels/
 plates/
 samesize_images/
 samesize_labels/
+
+.idea/
