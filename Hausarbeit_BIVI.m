@@ -5,27 +5,28 @@ clear; %Variablen bereinigen
 close all; %alles schließen
 
 %% 1. PLATE GENERATOR
-%script1_PlateGenerator;
-%script2_TrafficImageGenerator;
-%script3_TrafficResizeToSameSize;
+% script1_PlateGenerator;
+% script2_TrafficImageGenerator;
+% script3_TrafficResizeToSameSize;
 
 % Training Data
 % Load images from Plate Generator into data store for augmentation step 2
-imageDS = imageDatastore('TrainingData','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+imageDS = imageDatastore('TrainingData2','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
 [trainingImageDS,validationImageDS] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
 
 %% 2. AUGMENTER
-outputSize = [360 480 3];
-imageAugmenter = imageDataAugmenter('RandRotation',[-50,50],'RandXTranslation',[-5 5], 'RandYTranslation',[-5 5]);
-trainingImageAugDS = augmentedImageDatastore(outputSize, trainingImageDS, 'DataAugmentation',imageAugmenter);
-validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'DataAugmentation',imageAugmenter);
 
-
-outputSize = [360 480 3];
+outputSize = [200 50 3];
 imageAugmenter = imageDataAugmenter( ...
-    'RandRotation',[-50,50], ...
+    'RandRotation',[-10,10], ...
     'RandXTranslation',[-5 5], ...
-    'RandYTranslation',[-5 5])
+    'RandYTranslation',[-5 5], ...
+    'RandScale',[0.9, 1.2], ...
+    'RandXShear',[-10 10], ...
+    'RandYShear',[-10 10]);
+
+%==== TO DO: Shear, Scale, Translation, Rotation müssen eingesetzt werden
+
 trainingImageAugDS = augmentedImageDatastore(outputSize, trainingImageDS, 'DataAugmentation',imageAugmenter);
 validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'DataAugmentation',imageAugmenter);
 
@@ -36,7 +37,7 @@ validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'D
 % ----- einfaches DeepLearning Netzwerk definieren
 
 layers = [
-    imageInputLayer([360 480 3])
+    imageInputLayer([200 50 3])
     
     convolution2dLayer(3,8,'Padding','same')
     batchNormalizationLayer
@@ -59,35 +60,30 @@ layers = [
     classificationLayer
 ];
 
-options = trainingOptions('sgdm',...
-    'MaxEpochs',3, ...                    
-    'ValidationData', validationImageDS,...  % validationImageDS oder validationImageAugDS  ...
-    'ValidationFrequency',30,...
-    'Verbose',false,...
-    'Plots','training-progress');
-
-net = trainNetwork(trainingImageDS,layers,options);  % trainingImageDS oder trainingImageAugDS
-
-predictedLabels = classify(net, validationImageDS);
-accuracy = mean(predictedLabels == validationImageDS.Labels)
 
 %% 5. TRAIN NETWORK
 
 options = trainingOptions('sgdm',...
     'MaxEpochs',20, ...                    
-    'MiniBatchSize', 20, ...
-    'ValidationData', trainingImageAugDS,...  % validationImageDS oder validationImageAugDS  ...
-    'ValidationFrequency', 3,...
+    'ValidationData', validationImageAugDS,...  % validationImageDS oder validationImageAugDS  ...
+    'ValidationFrequency',5,...
     'Verbose',false,...
+     'MiniBatchSize', 10, ...
     'Plots','training-progress');
 
 net = trainNetwork(trainingImageAugDS,layers,options);  % trainingImageDS oder trainingImageAugDS
 
-predictedLabels = classify(net, validationImageAugDS);
-accuracy = mean(predictedLabels == validationImageAugDS.Labels)
 
 %% 6. TEST NETWORK
 
+testDS = imageDatastore('PlatesCuttedFromPicAndLabels','IncludeSubfolders',true,'LabelSource','foldernames');
+
+outputSize = [200 50 3]; %only for resizing :D
+imageAugmenter2 = imageDataAugmenter();
+testDSsize = augmentedImageDatastore(outputSize, testDS, 'DataAugmentation',imageAugmenter2);
+
+predictedLabels = classify(net, testDSsize);
+accuracy = mean(predictedLabels == testDS.Labels)
 %% 7. SET UP ALEXNET OPTIONAL
 
 %% 8. DATA OUTPUT
