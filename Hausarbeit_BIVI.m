@@ -15,7 +15,7 @@ imageDS = imageDatastore('TrainingData3','IncludeSubfolders',true,'LabelSource',
 
 %% 2. AUGMENTER
 
-outputSize = [200 50 3];
+outputSize = [50 200 3];
 imageAugmenter = imageDataAugmenter( ...
     'RandRotation',[-10,10], ...
     'RandXTranslation',[-5 5], ...
@@ -36,7 +36,7 @@ validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'D
 % ----- einfaches DeepLearning Netzwerk definieren
 
 layers = [
-    imageInputLayer([200 50 3])
+    imageInputLayer([50 200 3])
     
     convolution2dLayer(3,8,'Padding','same')
     batchNormalizationLayer
@@ -65,13 +65,13 @@ layers = [
 % 'ExecutionEnvironment' 'parallel' for gpu, 'cpu' for cpu training
 options = trainingOptions('sgdm',...
     'MaxEpochs',20, ...                    
-    'ValidationData', validationImageAugDS,...  % validationImageDS oder validationImageAugDS  ...
+    'ValidationData', validationImageDS,...  % validationImageDS oder validationImageAugDS  ...
     'ValidationFrequency',5,...
     'Verbose',false,...
     'MiniBatchSize', 10, ...    
     'Plots','training-progress');
 
-net = trainNetwork(trainingImageAugDS,layers,options);  % trainingImageDS oder trainingImageAugDS
+net = trainNetwork(trainingImageDS,layers,options);  % trainingImageDS oder trainingImageAugDS
 
 
 %% 6. TEST NETWORK
