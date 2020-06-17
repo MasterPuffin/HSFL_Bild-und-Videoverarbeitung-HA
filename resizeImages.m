@@ -14,11 +14,11 @@ path = '/Users/mjo/Documents/GitHub/Bild-und-Videoverarbeitung-HA/'
 % targetDataStore = 'C:\Users\tas\Desktop\190610 Mat DeepLearning Examples Razor\dPlateDetectionDiv\AufgabeNummernSchild_Tommy_Loesung_mit_SemanticSegmentation\LowMemtestimages2'
 % sourceDataStore = strcat(path, 'ImageLabelsTrain240_180')
 % targetDataStore = strcat(path, 'ImageLabelsTrain240_176')
-sourceDataStore = strcat(path, 'PlatesCuttedFromPicAndLabels/FL')
-targetDataStore = strcat(path, 'PlatesCuttedFromPicAndLabelsAlex/FL')
+sourceDataStore = strcat(path, 'TrainingData2/Other')
+targetDataStore = strcat(path, 'TrainingData2/Other')
 
-targetWidth = 227;
-targetHeight = 227;
+targetWidth = 200;
+targetHeight = 50;
 targetColors = 3;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

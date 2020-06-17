@@ -8,19 +8,20 @@ close all; %alles schließen
 % script1_PlateGenerator;
 
 %% 2. OWN AUGMENTER OPTIONAL
-%dsFL = imageDatastore('TrainingData2/FL');
-%dsSL = imageDatastore('TrainingData2/SL');
-%dsOther = imageDatastore('TrainingData2/Other');
-%BiViAugmenter(dsFL, 'TrainingDataAug/FL/');
-%BiViAugmenter(dsSL, 'TrainingDataAug/SL/');
-%BiViAugmenter(dsOther, 'TrainingDataAug/Other/');
+dsFL = imageDatastore('TrainingData2/FL'); %Datastores aufteilen
+dsSL = imageDatastore('TrainingData2/SL');
+dsOther = imageDatastore('TrainingData2/Other');
+BiViAugmenter(dsFL, 'TrainingDataAug/FL/');
+BiViAugmenter(dsSL, 'TrainingDataAug/SL/');
+BiViAugmenter(dsOther, 'TrainingDataAug/Other/');
 
+%jetzt alle Datastores in einem zusammenfassen?
 %% 3. AUGMENTER
 % Training Data
 % Load images from Plate Generator into data store for augmentation step 2
-imageDS = imageDatastore('TrainingData3','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+imageDS = imageDatastore('TrainingDataAug','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
 %resizeImages;
-[trainingImageDS,validationImageDS] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
+[trainingImageDSAug,validationImageDSAug] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
 
 %% 2. AUGMENTER
 
@@ -35,8 +36,8 @@ imageAugmenter = imageDataAugmenter( ...
 
 %==== TO DO: Shear, Scale, Translation, Rotation müssen eingesetzt werden
 
-trainingImageAugDS = augmentedImageDatastore(outputSize, trainingImageDS, 'DataAugmentation',imageAugmenter);
-validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'DataAugmentation',imageAugmenter);
+trainingImageAugDS = augmentedImageDatastore(outputSize, trainingImageDSAug, 'DataAugmentation',imageAugmenter);
+validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDSAug, 'DataAugmentation',imageAugmenter);
 
 %% 4. SET UP NETWORK
 
@@ -72,13 +73,13 @@ layers = [
 % 'ExecutionEnvironment' 'parallel' for gpu, 'cpu' for cpu training
 options = trainingOptions('sgdm',...
     'MaxEpochs',20, ...                    
-    'ValidationData', validationImageDS,...  % validationImageDS oder validationImageAugDS  ...
+    'ValidationData', validationImageAugDS,...  % validationImageDS oder validationImageAugDS  ...
     'ValidationFrequency',5,...
     'Verbose',false,...
     'MiniBatchSize', 10, ...    
     'Plots','training-progress');
 
-net = trainNetwork(trainingImageDS,layers,options);  % trainingImageDS oder trainingImageAugDS
+net = trainNetwork(trainingImageAugDS,layers,options);  % trainingImageDS oder trainingImageAugDS
 
 
 %% 6. TEST NETWORK
