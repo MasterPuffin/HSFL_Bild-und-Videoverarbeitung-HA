@@ -9,12 +9,19 @@ close all; %alles schließen
 % script2_TrafficImageGenerator;
 % script3_TrafficResizeToSameSize;
 
+%% 2. OWN AUGMENTER OPTIONAL
+%dsFL = imageDatastore('TrainingData2/FL');
+%dsSL = imageDatastore('TrainingData2/SL');
+%dsOther = imageDatastore('TrainingData2/Other');
+%BiViAugmenter(dsFL, 'TrainingDataAug/FL/');
+%BiViAugmenter(dsSL, 'TrainingDataAug/SL/');
+%BiViAugmenter(dsOther, 'TrainingDataAug/Other/');
+
+%% 3. AUGMENTER
 % Training Data
 % Load images from Plate Generator into data store for augmentation step 2
-imageDS = imageDatastore('TrainingData2','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
+imageDS = imageDatastore('TrainingDataAug','IncludeSubfolders',true,'LabelSource','foldernames');  % create DataStore
 [trainingImageDS,validationImageDS] = splitEachLabel(imageDS,0.7,'randomized'); %70% als Trainingsdatn, 30% als Valodation aufteilen
-
-%% 2. AUGMENTER
 
 outputSize = [200 50 3];
 imageAugmenter = imageDataAugmenter( ...
@@ -22,15 +29,13 @@ imageAugmenter = imageDataAugmenter( ...
     'RandXTranslation',[-5 5], ...
     'RandYTranslation',[-5 5], ...
     'RandScale',[0.9, 1.2], ...
-    'RandXShear',[-10 10], ...
-    'RandYShear',[-10 10]);
+    'RandXShear',[-5 5], ...
+    'RandYShear',[-5 5]);
 
 %==== TO DO: Shear, Scale, Translation, Rotation müssen eingesetzt werden
 
 trainingImageAugDS = augmentedImageDatastore(outputSize, trainingImageDS, 'DataAugmentation',imageAugmenter);
 validationImageAugDS = augmentedImageDatastore(outputSize, validationImageDS, 'DataAugmentation',imageAugmenter);
-
-%% 3. OWN AUGMENTER OPTIONAL
 
 %% 4. SET UP NETWORK
 
