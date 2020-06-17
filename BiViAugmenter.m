@@ -1,3 +1,9 @@
+%%%%%%%%%%%%%%%%%%%% BiViAugmenter %%%%%%%%%%%
+% Generiert je Bild in ds 100 Bilder mit unterschiedlichen realistischen
+% Farbtönen und Helligkeiten
+% ds: ein DataStore mit Bildern
+% p: relativer Zielpfad (String)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function BiViAugmenter(ds, p)
     for i=1:numel(ds.Files)
         [file, info] = readimage(ds, i);
