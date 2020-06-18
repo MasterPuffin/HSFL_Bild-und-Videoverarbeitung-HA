@@ -21,6 +21,8 @@ close all; %alles schlieﬂen
 
 augDataStore = imageDatastore('AlexNetDataAug','IncludeSubfolders',true,'LabelSource','foldernames');  % DataStore erstellen, Lables sind die Ordernamen
 [trainingImageDS,validationImageDS] = splitEachLabel(augDataStore,0.7,'randomized'); %70% als Trainingsdaten, 30% als Valodation aufteilen
+
+
 %% 2. AUGMENTER
 %Der Matlab-Augmenter vervielf‰ltig die Trainingsdaten durch Anwendung von
 %Scherung, Rotation, Skalierung und Verschiebungen

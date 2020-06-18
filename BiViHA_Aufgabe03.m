@@ -14,15 +14,14 @@ close all; %alles schlieﬂen
 %Wir erstellen drei Datastores zur Weiterverarbeitung und speichern diese
 % in einem neuen Datastore ab
 %lesen:
-%dsFL = imageDatastore('TrainingData2/FL');
-%dsSL = imageDatastore('TrainingData2/SL');
-%dsOther = imageDatastore('TrainingData2/Other');
-
-%Die Bilder durch den BiVI Augmenter hauen und im entspechenden Verzeichnis
-%abspeichern:
-%BiViAugmenter(dsFL, 'TrainingDataAug/FL/');
-%BiViAugmenter(dsSL, 'TrainingDataAug/SL/');
-%BiViAugmenter(dsOther, 'TrainingDataAug/Other/');
+% dsFL = imageDatastore('TrainingData2/FL');
+% dsSL = imageDatastore('TrainingData2/SL');
+% dsOther = imageDatastore('TrainingData2/Other');
+% 
+% %Die Bilder durch den BiVI Augmenter hauen und im entspechenden Verzeichnis abspeichern:
+% BiViAugmenter(dsFL, 'TrainingDataAug/FL/');
+% BiViAugmenter(dsSL, 'TrainingDataAug/SL/');
+% BiViAugmenter(dsOther, 'TrainingDataAug/Other/');
 
 %Datastore neu erstellen:
 augDataStore = imageDatastore('TrainingDataAug','IncludeSubfolders',true,'LabelSource','foldernames');  % DataStore erstellen, Lables sind die Ordernamen
@@ -77,11 +76,11 @@ layers = [
 
 % 'ExecutionEnvironment' 'parallel' for gpu, 'cpu' for cpu training
 options = trainingOptions('sgdm',...
-    'MaxEpochs',2, ...                    
+    'MaxEpochs',1, ...                    
     'ValidationData', validationImageAugDS,...  
-    'ValidationFrequency',10,...
+    'ValidationFrequency',20,...
     'Verbose',false,...
-    'MiniBatchSize', 10, ...    
+    'MiniBatchSize', 15, ...    
     'Plots','training-progress');
 
 net = trainNetwork(trainingImageAugDS,layers,options);  %das Netzwerk wird trainiert
