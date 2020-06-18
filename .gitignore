@@ -27,6 +27,8 @@ labels/
 plates/
 samesize_images/
 samesize_labels/
+AlexNetDataAug/
+TrainingDataAug/
 
 .idea/
 .DS_Store
